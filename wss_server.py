@@ -1,28 +1,30 @@
-from websocket_server import WebsocketServer
+import asyncio
 import ssl
+import pathlib
+import websockets
 
 # Puerto en el que el servidor WebSocket estará escuchando
 puerto = 5353
 
+# Rutas a los archivos de certificado y clave privada
+ruta_certificado = pathlib.Path('./certificado.pem')
+ruta_clave_privada = pathlib.Path('./clave_privada.pem')
+
+# Cargar los archivos de certificado y clave privada
+ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+ssl_context.load_cert_chain(ruta_certificado, ruta_clave_privada)
+
 # Función que se ejecuta cuando se recibe un mensaje del cliente
-def on_message(client, server, message):
+async def on_message(websocket, path):
+    message = await websocket.recv()
     print("Mensaje recibido del cliente:", message)
     
     # Enviar respuesta al cliente
-    server.send_message(client, "¡Hola desde el servidor!")
-
-# Ruta al certificado y la clave privada
-cert_file = "./certificado.pem"
-key_file = "./clave_privada.pem"
+    await websocket.send("¡Hola desde el servidor!")
 
 # Crear un servidor WebSocket seguro
-server = WebsocketServer(puerto, host='0.0.0.0', ssl={
-    'certfile': 'cert_file',
-    'keyfile': 'key_file'
-})
-
-# Asociar la función on_message al evento "message"
-server.set_fn_message_received(on_message)
+start_server = websockets.serve(on_message, "0.0.0.0", puerto, ssl=ssl_context)
 
 # Iniciar el servidor
-server.run_forever()
+asyncio.get_event_loop().run_until_complete(start_server)
+asyncio.get_event_loop().run_forever()
