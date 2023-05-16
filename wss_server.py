@@ -4,7 +4,7 @@ import pathlib
 import websockets
 
 # Puerto en el que el servidor WebSocket estará escuchando
-puerto = 5353
+puerto = 9000
 
 # Rutas a los archivos de certificado y clave privada
 ruta_certificado = pathlib.Path('./certificado.pem')
