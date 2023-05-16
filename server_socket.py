@@ -1,8 +1,8 @@
 import socket
 
 # Configura la dirección IP y el puerto del servidor
-SERVER_IP = '192.168.1.100'
-SERVER_PORT = 8000
+SERVER_IP = '192.168.0.9'
+SERVER_PORT = 69
 
 # Crea un socket TCP
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
