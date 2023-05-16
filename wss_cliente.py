@@ -2,7 +2,7 @@ import websocket
 import ssl
 
 # URL del servidor WebSocket seguro en la Raspberry Pi
-url = "wss://direccion_ip_raspberry:puerto"
+url = "wss://192.168.0.5:5353"
 
 # Crear una conexión WebSocket segura
 ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE})
