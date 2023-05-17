@@ -1,21 +1,21 @@
-import websocket
-import ssl
+import asyncio
+import websockets
+from cryptography.fernet import Fernet
 
-# URL del servidor WebSocket seguro en la Raspberry Pi
-url = "wss://192.168.0.4:5040"
+# Clave de cifrado utilizada en el servidor
+clave = b'ClaveDeCifradoDelServidorAquí'
 
-# Crear una conexión WebSocket segura
-ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE})
+async def cliente():
+    async with websockets.connect("ws://<dirección_del_servidor>:8765") as websocket:
+        while True:
+            # Enviar datos al servidor
+            mensaje = input("Ingrese un mensaje: ")
+            datos_cifrados = Fernet(clave).encrypt(mensaje.encode())
+            await websocket.send(datos_cifrados)
+            
+            # Recibir respuesta del servidor
+            respuesta_cifrada = await websocket.recv()
+            respuesta = Fernet(clave).decrypt(respuesta_cifrada)
+            print(f"Respuesta del servidor: {respuesta.decode()}")
 
-# Conectar al servidor
-ws.connect(url)
-
-# Enviar datos al servidor
-ws.send("¡Hola desde el cliente!")
-
-# Recibir datos del servidor
-response = ws.recv()
-print("Respuesta del servidor:", response)
-
-# Cerrar la conexión
-ws.close()
+asyncio.get_event_loop().run_until_complete(cliente())
